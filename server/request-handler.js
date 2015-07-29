@@ -23,6 +23,7 @@ this file and include it in basic-server.js so that it actually works.
 // client from this domain by setting up static file serving.
 
 var messages = [];
+var objectId = 1;
 
 var defaultCorsHeaders = {
     "access-control-allow-origin": "*",
@@ -94,8 +95,9 @@ var requestHandler = function(request, response) {
         "POST": function(request, response) {
 
             statusCode = 201;
-            collectData(request, function(data){
-              messages.push(data);
+            collectData(request, function(message){
+              message.objectId = ++objectId;
+              messages.push(message);
               sendResponse(statusCode, JSON.stringify({results: messages}), response);
             });
         },
