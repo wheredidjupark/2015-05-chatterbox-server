@@ -71,7 +71,7 @@ var requestHandler = function(request, response) {
     // .writeHead() writes to the request line and headers of the response,
     // which includes the status and all headers.
 
-    var collectData = function(request, response) {
+    var collectData = function(request, callback) {
         var data = "";
 
         request.on("data", function(chunk) {
@@ -79,12 +79,10 @@ var requestHandler = function(request, response) {
         });
 
         request.on("end", function() {
-            messages.push(JSON.parse(data));
-            sendResponse(statusCode, JSON.stringify({
-                results: messages
-            }), response);
+            callback(JSON.parse(data)); //the data will be in json format
         });
     };
+
 
     var actions = {
         "GET": function(request, response) {
@@ -96,7 +94,10 @@ var requestHandler = function(request, response) {
         "POST": function(request, response) {
 
             statusCode = 201;
-            collectData(request, response);
+            collectData(request, function(data){
+              messages.push(data);
+              sendResponse(statusCode, JSON.stringify({results: messages}), response);
+            });
         },
         "OPTIONS": function(request, response) {
             sendResponse(statusCode, null, response);
