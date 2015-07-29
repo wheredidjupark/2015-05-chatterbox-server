@@ -27,7 +27,7 @@ var ip = "127.0.0.1";
 
 var routes = {
 	"/classes/messages": handleRequest,
-	"classes/room1": handleRequest
+	//"classes/room": handleRequest
 };
 
 var server = http.createServer(function(request, response) {
