@@ -21,6 +21,9 @@ this file and include it in basic-server.js so that it actually works.
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
+
+var messages = [];
+
 var defaultCorsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -29,7 +32,6 @@ var defaultCorsHeaders = {
 };
 
 
-var obj = {results: []};
 
 var requestHandler = function(request, response) {
 
@@ -61,10 +63,20 @@ var requestHandler = function(request, response) {
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
 
-response.writeHead(statusCode, headers);
-
 if(request.method === "GET"){
-  response.write(JSON.stringify(obj));
+  //TODO: sending response for GET request
+  response.writeHead(statusCode, defaultCorsHeaders);
+  response.end(JSON.stringify({}));
+} else if (request.method === "POST"){
+  //TODO: sending response for POST request
+  statusCode = 201;
+  response.writeHead(statusCode, defaultCorsHeaders);
+
+} else if (request.method === "OPTIONS"){
+  //TODO: sending response for OPTIONS request (i.e. cross origin request)
+  statusCode = 200;
+  response.writeHead(statusCode, defaultCorsHeaders);
+  response.end();
 }
 
 
