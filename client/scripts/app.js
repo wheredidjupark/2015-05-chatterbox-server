@@ -98,7 +98,7 @@ $(function() {
       app.stopSpinner();
       if (Array.isArray(results)) {
         // Add all fetched messages
-        results.forEach(app.addMessage);
+        results.reverse().forEach(app.addMessage);
       }
 
       // Make it scroll to the bottom
