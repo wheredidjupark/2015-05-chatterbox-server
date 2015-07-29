@@ -66,12 +66,12 @@ var requestHandler = function(request, response) {
 if(request.method === "GET"){
   //TODO: sending response for GET request
   response.writeHead(statusCode, defaultCorsHeaders);
-  response.end(JSON.stringify({}));
+  response.end(JSON.stringify({results: messages}));
 } else if (request.method === "POST"){
   //TODO: sending response for POST request
   statusCode = 201;
   response.writeHead(statusCode, defaultCorsHeaders);
-
+  response.end(JSON.stringify({results: messages}));
 } else if (request.method === "OPTIONS"){
   //TODO: sending response for OPTIONS request (i.e. cross origin request)
   statusCode = 200;
