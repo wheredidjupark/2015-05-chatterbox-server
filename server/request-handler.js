@@ -28,7 +28,14 @@ var defaultCorsHeaders = {
     "access-control-allow-origin": "*",
     "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
     "access-control-allow-headers": "content-type, accept",
-    "access-control-max-age": 10 // Seconds.
+    "access-control-max-age": 10, // Seconds.
+    "Content-Type": "application/json"
+
+    // See the note below about CORS headers.
+    // Tell the client we are sending them JSON.
+    // You will need to change this if you are sending something
+    // other than plain text, like JSON or HTML.
+
 };
 
 
@@ -37,6 +44,7 @@ var sendResponse = function(statusCode, data, response) {
     response.writeHead(statusCode, defaultCorsHeaders);
     response.end(data);
 };
+
 
 
 var requestHandler = function(request, response) {
@@ -60,29 +68,49 @@ var requestHandler = function(request, response) {
     // The outgoing status.
     var statusCode = 200;
 
-    // See the note below about CORS headers.
-    // Tell the client we are sending them JSON.
-    // You will need to change this if you are sending something
-    // other than plain text, like JSON or HTML.
-    defaultCorsHeaders['Content-Type'] = "application/json";
-
     // .writeHead() writes to the request line and headers of the response,
     // which includes the status and all headers.
 
-    if (request.method === "GET") {
+    var collectData = function(request, response) {
+        var data = "";
 
-        sendResponse(statusCode, JSON.stringify({results:messages}), response);
-    } else if (request.method === "POST") {
+        request.on("data", function(chunk) {
+            data += chunk;
+        });
 
-        statusCode = 201;
-        sendResponse(statusCode,JSON.stringify({results:messages}) , response);
-    } else if (request.method === "OPTIONS") {
-        //TODO: sending response for OPTIONS request (i.e. cross origin request)
-        sendResponse(statusCode, null, response);
+        request.on("end", function() {
+            messages.push(JSON.parse(data));
+            sendResponse(statusCode, JSON.stringify({
+                results: messages
+            }), response);
+        });
+    };
+
+    var actions = {
+        "GET": function(request, response) {
+            sendResponse(statusCode, JSON.stringify({
+                results: messages
+            }), response);
+        },
+
+        "POST": function(request, response) {
+
+            statusCode = 201;
+            collectData(request, response);
+        },
+        "OPTIONS": function(request, response) {
+            sendResponse(statusCode, null, response);
+        }
+    };
+
+    var action = actions[request.method];
+    if (action) {
+        action(request, response);
+    } else {
+        //TODO: error handling
     }
 
 
-    response.end();
     // Make sure to always call response.end() - Node may not send
     // anything back to the client until you do. The string you pass to
     // response.end() will be the body of the response - i.e. what shows
