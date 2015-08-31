@@ -53,6 +53,7 @@ var requestHandler = function(request, response) {
     if (action) {
         action(request, response);
     } else {
+      console.error("No available action for the "+ request.method + " request");
         //TODO: error handling
     }
 

@@ -43,6 +43,7 @@ var actions = {
         }), response);
     },
 
+//For post, you have to collect the data.
     "POST": function(request, response) {
 
         //statusCode = 201;
